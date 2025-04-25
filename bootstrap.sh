@@ -1,10 +1,12 @@
 #!/bin/bash
 
-echo "=== Bootstrapping Mac Studio Setup ==="
+echo "=== Bootstrapping Mac Studio Setup (Linux Test) ==="
 
 # Install Python and Ansible
 echo "Installing Python and Ansible..."
-brew install python ansible
+sudo apt update
+sudo apt install -y python3 python3-pip
+pip3 install ansible
 
 # Run the Ansible playbook
 echo "Running Ansible playbook..."

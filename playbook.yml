@@ -1,67 +1,63 @@
 ---
-- name: Configure Mac Studio
+- name: Configure Mac Studio (Linux Test)
   hosts: localhost
   connection: local
   tasks:
-    - name: Install all Homebrew packages from Brewfile
-      command: brew bundle --file "{{ playbook_dir }}/Brewfile"
-      args:
-        creates: /opt/homebrew/bin/zsh
-      register: brew_result
+    - name: Install Linux packages
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - zsh
+        - openjdk-17-jdk
+        - podman
+        - chezmoi
+      become: yes
+      when: ansible_os_family == 'Debian'
       tags: packages
 
-    - name: Verify Homebrew packages are installed
+    - name: Verify Linux packages are installed
       stat:
         path: "{{ item }}"
       loop:
-        - /opt/homebrew/bin/zsh
-        - /opt/homebrew/bin/ansible
-        - /opt/homebrew/bin/chezmoi
-        - /opt/homebrew/bin/podman
-        - /opt/homebrew/bin/java
-        - /Applications/JetBrains Toolbox.app
-        - /Applications/Google Chrome.app
+        - /usr/bin/zsh
+        - /usr/bin/java
+        - /usr/bin/podman
+        - /usr/bin/chezmoi
       register: package_check
       failed_when: not package_check.stat.exists
+      when: ansible_os_family == 'Debian'
       tags: packages
 
-    - name: Initialize Podman machine
-      command: podman machine init --cpus 2 --memory 2048 --disk-size 20
-      args:
-        creates: ~/.config/containers/podman/machine/qemu/podman-machine-default.json
-      tags: podman
-
-    - name: Install Podman macOS networking helper
-      command: podman-mac-helper install
-      become: yes
-      args:
-        creates: /etc/podman/podman-mac-helper
-      tags: podman
-
-    - name: Start Podman VM
-      command: podman machine start
-      register: podman_vm
-      changed_when: "'Machine already running' not in podman_vm.stderr"
-      failed_when: podman_vm.rc != 0 and 'Machine already running' not in podman_vm.stderr
+    - name: Ensure Podman is configured
+      command: podman system service --time=0 &
+      register: podman_service
+      changed_when: false
+      failed_when: podman_service.rc != 0
+      when: ansible_os_family == 'Debian'
       tags: podman
 
     - name: Verify Podman networking
-      command: podman run --rm -p 8080:80 nginx
+      command: podman run --rm -p 8080:80 docker.io/library/nginx
       register: podman_nginx
       async: 5
       poll: 0
+      when: ansible_os_family == 'Debian'
       tags: podman
 
     - name: Check Podman port forwarding
       command: curl -s http://localhost:8080
       register: podman_curl
       failed_when: "'Welcome to nginx' not in podman_curl.stdout"
+      when: ansible_os_family == 'Debian'
       tags: podman
 
     - name: Stop Podman test container
       command: podman stop $(podman ps -q)
       when: podman_nginx is success
       ignore_errors: true
+      when: ansible_os_family == 'Debian'
       tags: podman
 
     - name: Install Oh My Zsh
@@ -79,6 +75,7 @@
 
     - name: Set zsh as default shell
       shell: chsh -s /bin/zsh
+      become: yes
       tags: zsh
 
     - name: Verify zsh is the default shell
@@ -87,35 +84,6 @@
       changed_when: false
       failed_when: shell_check.stdout != "/bin/zsh"
       tags: zsh
-
-    - name: Copy JetBrains Toolbox IDE configuration
-      copy:
-        src: "{{ playbook_dir }}/toolbox-ides.json"
-        dest: ~/.local/share/JetBrains/Toolbox/ides-to-install.json
-      tags: ides
-
-    - name: Trigger JetBrains Toolbox to install IDEs
-      command: open "jetbrains://toolbox/install/{{ item }}"
-      loop:
-        - IU
-        - PY
-      register: toolbox_install
-      tags: ides
-
-    - name: Wait for JetBrains IDEs to install
-      pause:
-        seconds: 60
-      tags: ides
-
-    - name: Verify JetBrains IDEs are installed
-      command: find ~/Applications -maxdepth 1 -name "{{ item }}"
-      loop:
-        - "IntelliJ IDEA*.app"
-        - "PyCharm*.app"
-      register: ide_check
-      changed_when: false
-      failed_when: ide_check.stdout == ""
-      tags: ides
 
     - name: Apply chezmoi dotfiles
       command: chezmoi --source "{{ playbook_dir }}/dotfiles" apply
@@ -135,6 +103,6 @@
 
     - name: Final success message
       debug:
-        msg: "All components installed and configured successfully with Podman and IDEs!"
-      when: brew_result is success and podman_curl is success and ohmyzsh_result is success and shell_result is success and chezmoi_result is success and ide_check is success
-      tags: [packages, podman, zsh, dotfiles, ides]
+        msg: "All components installed and configured successfully (WSL test)!"
+      when: package_check is success and podman_curl is success and ohmyzsh_result is success and shell_result is success and chezmoi_result is success
+      tags: [packages, podman, zsh, dotfiles]
