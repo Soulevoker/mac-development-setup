@@ -8,7 +8,7 @@ sudo apt update
 sudo apt install -y python3 python3-pip pipx
 pipx ensurepath
 export PATH="$HOME/.local/bin:$PATH"
-pipx install ansible
+sudo apt install -y ansible-core
 
 # Run the Ansible playbook
 echo "Running Ansible playbook..."
