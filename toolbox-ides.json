@@ -1,0 +1,12 @@
+{
+  "tools": [
+    {
+      "id": "IU",
+      "version": "latest"
+    },
+    {
+      "id": "PY",
+      "version": "latest"
+    }
+  ]
+}
