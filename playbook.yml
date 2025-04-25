@@ -12,7 +12,6 @@
         - zsh
         - openjdk-17-jdk
         - podman
-        - chezmoi
       become: yes
       when: ansible_os_family == 'Debian'
       tags: packages
@@ -24,7 +23,6 @@
         - /usr/bin/zsh
         - /usr/bin/java
         - /usr/bin/podman
-        - /usr/bin/chezmoi
       register: package_check
       failed_when: not package_check.stat.exists
       when: ansible_os_family == 'Debian'
@@ -85,24 +83,8 @@
       failed_when: shell_check.stdout != "/bin/zsh"
       tags: zsh
 
-    - name: Apply chezmoi dotfiles
-      command: chezmoi --source "{{ playbook_dir }}/dotfiles" apply
-      register: chezmoi_result
-      tags: dotfiles
-
-    - name: Verify chezmoi applied dotfiles
-      stat:
-        path: "{{ item }}"
-      loop:
-        - ~/.zshrc
-        - ~/.gitconfig
-        - ~/.oh-my-zsh
-      register: dotfile_check
-      failed_when: not dotfile_check.stat.exists
-      tags: dotfiles
-
     - name: Final success message
       debug:
         msg: "All components installed and configured successfully (WSL test)!"
-      when: package_check is success and podman_curl is success and ohmyzsh_result is success and shell_result is success and chezmoi_result is success
+      when: package_check is success and podman_curl is success and ohmyzsh_result is success and shell_result is success 
       tags: [packages, podman, zsh, dotfiles]
