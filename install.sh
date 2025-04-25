@@ -29,6 +29,7 @@ sudo apt install -y git curl
 # Temporary directory for setup
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR" || exit 1
+echo $TEMP_DIR
 
 # Clone the repo
 echo "Fetching setup from GitHub..."
