@@ -29,7 +29,7 @@
       tags: packages
 
     - name: Ensure Podman is configured
-      command: podman system service --time=5
+      shell: podman system service --time=0 &
       register: podman_service
       changed_when: false
       failed_when: podman_service.rc != 0
@@ -41,6 +41,15 @@
       register: podman_nginx
       async: 5
       poll: 0
+      when: ansible_os_family == 'Debian'
+      tags: podman
+
+    - name: Wait for Nginx container to be ready
+      wait_for:
+        host: localhost
+        port: 8080
+        state: started
+        timeout: 30
       when: ansible_os_family == 'Debian'
       tags: podman
 
@@ -86,5 +95,5 @@
     - name: Final success message
       debug:
         msg: "All components installed and configured successfully (WSL test)!"
-      when: package_check is success and podman_curl is success and ohmyzsh_result is success and shell_result is success 
+      when: package_check is success and podman_curl is success and ohmyzsh_result is success and shell_result is success
       tags: [packages, podman, zsh, dotfiles]
