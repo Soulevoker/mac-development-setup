@@ -61,7 +61,7 @@
       tags: podman
 
     - name: Stop Podman test container
-      command: podman stop $(podman ps -q)
+      shell: podman stop $(podman ps -q)
       when: podman_nginx is success
       ignore_errors: true
       when: ansible_os_family == 'Debian'
