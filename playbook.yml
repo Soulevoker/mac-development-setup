@@ -29,7 +29,7 @@
       tags: packages
 
     - name: Ensure Podman is configured
-      command: podman system service --time=0 &
+      command: podman system service --time=5
       register: podman_service
       changed_when: false
       failed_when: podman_service.rc != 0
