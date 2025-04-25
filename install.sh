@@ -35,6 +35,7 @@ echo $TEMP_DIR
 echo "Fetching setup from GitHub..."
 git clone https://github.com/Soulevoker/mac-development-setup.git
 cd mac-development-setup || exit 1
+git checkout testing-linux || exit 1
 
 # Ensure bootstrap.sh is executable and run it
 chmod +x bootstrap.sh
