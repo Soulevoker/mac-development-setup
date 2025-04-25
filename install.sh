@@ -32,7 +32,7 @@ cd "$TEMP_DIR" || exit 1
 
 # Clone the repo
 echo "Fetching setup from GitHub..."
-git clone https://github.com/yourusername/mac-studio-setup.git
+git clone https://github.com/Soulevoker/mac-development-setup.git
 cd mac-studio-setup || exit 1
 
 # Ensure bootstrap.sh is executable and run it
