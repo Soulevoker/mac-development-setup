@@ -80,11 +80,20 @@
       failed_when: podman_machine_init.rc != 0
       tags: podman
 
+    - name: Verify sudo access for Podman helper
+      command: sudo -n true
+      register: sudo_check
+      failed_when: sudo_check.rc != 0
+      tags: podman
+
     - name: Install Podman macOS networking helper
       command: podman-mac-helper install
       become: yes
+      become_method: sudo
       args:
         creates: /etc/podman/podman-mac-helper
+      register: podman_helper_install
+      failed_when: podman_helper_install.rc != 0
       tags: podman
 
     - name: Start Podman VM
