@@ -152,6 +152,11 @@
       failed_when: shell_check.stdout != "/bin/zsh"
       tags: zsh
 
+    - name: Ensure JetBrains Toolbox configuration directory exists
+      file:
+        path: ~/.local/share/JetBrains/Toolbox
+        state: directory
+
     - name: Copy JetBrains Toolbox IDE configuration
       copy:
         src: "{{ playbook_dir }}/toolbox-ides.json"
