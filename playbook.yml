@@ -66,8 +66,11 @@
 
     - name: Initialize Podman machine
       command: podman machine init --cpus 2 --memory 2048 --disk-size 20
+      when: (podman_machine_list.stdout | from_json | length == 0) or not (ansible_stat.stat.exists | default(false))
       args:
         creates: ~/.config/containers/podman/machine/qemu/podman-machine-default.json
+      register: podman_machine_init
+      failed_when: podman_machine_init.rc != 0
       tags: podman
 
     - name: Install Podman macOS networking helper
