@@ -1,1 +1,1 @@
-brew "python" brew "ansible" brew "chezmoi" brew "podman" brew "podman-mac-helper" brew "zsh" brew "openjdk" brew "nvim" brew "go" cask "iterm2" cask "jetbrains-toolbox" cask "google-chrome"
+brew "python@3.12" brew "ansible" brew "chezmoi" brew "podman" brew "podman-mac-helper" brew "zsh" brew "openjdk" brew "go" brew "nvim" cask "jetbrains-toolbox" cask "google-chrome" cask "iterm2"
