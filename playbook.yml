@@ -3,11 +3,41 @@
   hosts: localhost
   connection: local
   tasks:
-    - name: Install all Homebrew packages from Brewfile
-      command: brew bundle --file "{{ playbook_dir }}/Brewfile"
-      args:
-        creates: /opt/homebrew/bin/zsh
-      register: brew_result
+    - name: Verify Brewfile exists and is readable
+      stat:
+        path: "{{ playbook_dir }}/Brewfile"
+      register: brewfile_check
+      failed_when: not brewfile_check.stat.exists or not brewfile_check.stat.readable
+      tags: packages
+
+    - name: Read Brewfile to extract packages
+      slurp:
+        src: "{{ playbook_dir }}/Brewfile"
+      register: brewfile_content
+      tags: packages
+
+    - name: Parse Brewfile for brew and cask packages
+      set_fact:
+        brew_packages: "{{ brewfile_content.content | b64decode | regex_findall('brew \"([^\"]+)\"') }}"
+        cask_packages: "{{ brewfile_content.content | b64decode | regex_findall('cask \"([^\"]+)\"') }}"
+      tags: packages
+
+    - name: Install Homebrew brew packages
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ brew_packages }}"
+      register: brew_install
+      failed_when: brew_install.failed
+      tags: packages
+
+    - name: Install Homebrew cask packages
+      homebrew_cask:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ cask_packages }}"
+      register: cask_install
+      failed_when: cask_install.failed
       tags: packages
 
     - name: Verify Homebrew packages are installed
