@@ -97,8 +97,8 @@
     - name: Start Podman VM
       command: podman machine start
       register: podman_vm
-      changed_when: "'Machine already running' not in podman_vm.stderr"
-      failed_when: podman_vm.rc != 0 and 'Machine already running' not in podman_vm.stderr
+      changed_when: "'already running' not in podman_vm.stderr"
+      failed_when: podman_vm.rc != 0 and 'already running' not in podman_vm.stderr
       tags: podman
 
     - name: Verify Podman networking
