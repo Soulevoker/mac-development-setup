@@ -80,10 +80,8 @@
       failed_when: podman_machine_init.rc != 0
       tags: podman
 
-    - name: Verify sudo access for Podman helper
-      command: sudo -n true
-      register: sudo_check
-      failed_when: sudo_check.rc != 0
+    - name: Refresh sudo session for Podman helper
+      command: sudo -v
       tags: podman
 
     - name: Install Podman macOS networking helper
