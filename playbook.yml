@@ -39,6 +39,12 @@
       register: cask_install
       failed_when: cask_install.failed
       tags: packages
+      
+    - name: Ensure OpenJDK is symlinked
+      command: brew link openjdk@21 --force
+      args:
+        creates: /opt/homebrew/bin/java
+      tags: packages
 
     - name: Verify Homebrew packages are installed
       stat:
@@ -51,7 +57,7 @@
         - /opt/homebrew/bin/java
         - /opt/homebrew/bin/nvim
         - /opt/homebrew/bin/go
-        - /Applications/iTerm2.app
+        - /Applications/iTerm.app
         - /Applications/JetBrains Toolbox.app
         - /Applications/Google Chrome.app
       register: package_check
