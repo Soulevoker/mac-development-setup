@@ -20,6 +20,7 @@
         - /opt/homebrew/bin/podman
         - /opt/homebrew/bin/java
         - /opt/homebrew/bin/nvim
+        - /opt/homebrew/bin/go
         - /Applications/iTerm2.app
         - /Applications/JetBrains Toolbox.app
         - /Applications/Google Chrome.app
@@ -101,12 +102,13 @@
       loop:
         - IU
         - PY
+        - GO
       register: toolbox_install
       tags: ides
 
     - name: Wait for JetBrains IDEs to install
       pause:
-        seconds: 60
+        seconds: 180
       tags: ides
 
     - name: Verify JetBrains IDEs are installed
@@ -114,6 +116,7 @@
       loop:
         - "IntelliJ IDEA*.app"
         - "PyCharm*.app"
+        - "GoLand*.app"
       register: ide_check
       changed_when: false
       failed_when: ide_check.stdout == ""

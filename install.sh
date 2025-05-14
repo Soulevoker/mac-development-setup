@@ -77,7 +77,12 @@ cd mac-development-setup || exit 1
 # Ensure bootstrap.sh is executable and run it
 chmod +x bootstrap.sh
 echo "Running bootstrap script..."
-./bootstrap.sh
+if ! ./bootstrap.sh; then
+  echo "Error: Bootstrap script failed. Check logs for details." >&2
+  cd /tmp || exit 1
+  rm -rf "$TEMP_DIR"
+  exit 1
+fi
 
 # Clean up
 cd /tmp || exit 1
