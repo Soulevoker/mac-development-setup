@@ -21,15 +21,37 @@ if [ "$(uname)" != "Darwin" ]; then
   exit 1
 fi
 
+# Check for sudo access
+echo "Checking for sudo access (may prompt for password)..."
+if ! sudo -v >/dev/null 2>&1; then
+  echo "Error: This script requires sudo access. Please run as an admin user." >&2
+  exit 1
+fi
+
+
 # Install Xcode Command Line Tools (ensures Git is functional)
 echo "Installing Xcode Command Line Tools..."
 if ! xcode-select -p >/dev/null 2>&1; then
   xcode-select --install || true
   if [ -n "${NONINTERACTIVE-}" ]; then
-    echo "Non-interactive mode: Assuming Command Line Tools are installed or will be manually handled."
+    echo "Non-interactive mode: Waiting up to 5 minutes for Command Line Tools..."
+    for i in {1..300}; do
+      if [ -x "/Library/Developer/CommandLineTools/usr/bin/git" ]; then
+        echo "Xcode Command Line Tools installed."
+        break
+      fi
+      sleep 1
+    done
+    if ! [ -x "/Library/Developer/CommandLineTools/usr/bin/git" ]; then
+      echo "Warning: Xcode Command Line Tools not detected after timeout. Proceeding anyway."
+    fi
   else
-    echo "Press any key when the Command Line Tools installation is complete..."
-    read -n 1 -s
+    echo "A GUI prompt should appear to install Xcode Command Line Tools."
+    echo "Press any key when the installation is complete..."
+    until [ -x "/Library/Developer/CommandLineTools/usr/bin/git" ]; do
+      read -n 1 -s
+    done
+    echo "Xcode Command Line Tools installed."
   fi
 fi
 
@@ -49,7 +71,7 @@ cd "$TEMP_DIR" || exit 1
 
 # Clone the repo
 echo "Fetching setup from GitHub..."
-git clone https://github.com/yourusername/mac-studio-setup.git
+git clone https://github.com/Soulevoker/mac-development-setup.git
 cd mac-studio-setup || exit 1
 
 # Ensure bootstrap.sh is executable and run it
