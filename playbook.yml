@@ -107,6 +107,14 @@
       async: 5
       poll: 0
       tags: podman
+      
+    - name: Wait for Nginx container to be ready
+      wait_for:
+        host: localhost
+        port: 8080
+        state: started
+        timeout: 30
+      tags: podman
 
     - name: Check Podman port forwarding
       command: curl -s http://localhost:8080
