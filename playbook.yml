@@ -63,6 +63,13 @@
       register: package_check
       failed_when: not package_check.stat.exists
       tags: packages
+      
+    - name: Check if Podman machine exists
+      command: podman machine list --format json
+      register: podman_machine_list
+      changed_when: false
+      failed_when: podman_machine_list.rc != 0
+      tags: podman
 
     - name: Initialize Podman machine
       command: podman machine init --cpus 2 --memory 2048 --disk-size 20
