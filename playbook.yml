@@ -19,6 +19,8 @@
         - /opt/homebrew/bin/chezmoi
         - /opt/homebrew/bin/podman
         - /opt/homebrew/bin/java
+        - /opt/homebrew/bin/nvim
+        - /Applications/iTerm2.app
         - /Applications/JetBrains Toolbox.app
         - /Applications/Google Chrome.app
       register: package_check
