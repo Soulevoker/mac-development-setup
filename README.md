@@ -6,12 +6,12 @@ Automated setup for a development Mac Studio using Ansible, chezmoi, Homebrew, a
 
 Run this command on a fresh macOS system:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/mac-studio-setup/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Soulevoker/mac-studio-setup/main/install.sh | bash
 ```
 
 For non-interactive mode (e.g., CI):
 ```bash
-NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/yourusername/mac-studio-setup/main/install.sh | bash
+NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/Soulevoker/mac-studio-setup/main/install.sh | bash
 ```
 
 ## Components
@@ -26,5 +26,5 @@ Test with a new user:
 ```bash
 sudo sysadminctl -addUser testuser -fullName "Test User" -password test123
 su - testuser
-curl -fsSL https://raw.githubusercontent.com/yourusername/mac-studio-setup/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Soulevoker/mac-studio-setup/main/install.sh | bash
 ```
